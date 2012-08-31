@@ -9,10 +9,12 @@ class Output {
 			array (
 				'{{CONTENT}}',
 				'{{TITLE}}',
+				'{{MENU}}',
 			),
 			array (
 				$page->getContent(),
 				$page->getTitle(),
+				$page->getMenu(),
 			),
 			$template
 		);
