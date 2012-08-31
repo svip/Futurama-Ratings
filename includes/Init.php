@@ -14,3 +14,5 @@ require ( 'includes/Database.php' );
 require ( 'includes/GlobalFunctions.php' );
 
 require ( 'includes/Authentication.php' );
+
+require ( 'includes/Parser.php' );

@@ -3,8 +3,10 @@
 abstract class Page {
 	protected $content = '';
 	protected $title = '';
+	protected $episodes = array();
 	
 	public function __construct ( ) {
+		$this->getEpisodes();
 		$this->render();
 	}
 	
@@ -19,6 +21,14 @@ abstract class Page {
 	}
 	
 	abstract protected function render();
+	
+	private function getEpisodes ( ) {
+		$i = gfDBQuery("SELECT `episode_name`, `episode_id`
+			FROM `episodes`");
+		while ( $result = gfDBGetResult($i) ) {
+			$this->episodes[$result['episode_id']] = $result['episode_name'];
+		}
+	}
 	
 	public function getContent ( ) {
 		return $this->content;

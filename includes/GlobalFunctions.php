@@ -124,6 +124,15 @@ function gfValueSanitise ( $string ) {
 	);
 }
 
+function gfZero ( $number, $tenth ) {
+	if ( $number >= $tenth ) {
+		return $number;
+	} else {
+		return '0'.$number;
+		// TODO: Make it work for $tenth = 1000 and number = 10.
+	}
+}
+
 function gfGetDB ( ) {
 	global $DB, $DbHost, $DbName, $DbUser, $DbPass;
 	if ( is_null($DB) )
