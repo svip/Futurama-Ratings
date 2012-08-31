@@ -221,6 +221,13 @@ class Authentication {
 		
 		return true;
 	}
+	
+	public function logout ( ) {
+		setcookie('ratings-userid', null,
+			time()+365*24*60*60);
+		setcookie('ratings-password', null,
+			time()+365*24*60*60);
+	}
 
 }
 
