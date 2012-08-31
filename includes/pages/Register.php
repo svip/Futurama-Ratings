@@ -81,7 +81,7 @@ class PageRegister extends Page {
 		if ( $this->hasErrors('createRegisterForm', $errors) )
 			return;
 		
-		gfGetAuth()->performLogin($userid, $password1, false);
+		gfGetAuth()->performLoginWithUserid($userid, $password1, false);
 		
 		gfRedirect();
 	}

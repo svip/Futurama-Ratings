@@ -101,7 +101,8 @@ class Authentication {
 	}
 	
 	public function getUserData($data) {
-		if ( $this->isLoggedIn() )
+		if ( $this->isLoggedIn()
+			&& isset($this->userData[$data]) )
 			return $this->userData[$data];
 		return null;
 	}
@@ -180,11 +181,38 @@ class Authentication {
 		return $this->comparePassword($password, $result['user_password'], $passwordIsHashed);
 	}
 	
-	public function performLogin($userid, $password,
+	public function performLogin ( $username, $password,
+			$passwordIsHashed=false ) {
+		$i = gfDBQuery("SELECT `user_id`
+			FROM `users`
+			WHERE LOWER(`user_name`) = '".strtolower($username)."'");
+		
+		$result = gfDBGetResult($i);
+		
+		return $this->performLoginWithUserid($result['user_id'],
+			$password, $passwordIsHashed);
+	}
+	
+	public function performLoginWithUserid($userid, $password,
 			$passwordIsHashed = false) {
-		if ( !$this->verifyLoginCombo($userid, $password,
-				$passwordIsHashed) )
+		$i = gfDBQuery("SELECT `user_id`, `user_password`
+			FROM `users`
+			WHERE `user_id` = $userid");
+		
+		if ( gfDBGetNumRows($i) != 1 ) {
 			return false;
+		}
+		
+		$result = gfDBGetResult($i);
+		
+		if ( !$this->comparePassword($password, $result['user_password'], $passwordIsHashed) )
+			return false;
+		
+		if ( !$passwordIsHashed )
+			$password = $result['user_password'];
+		
+		$password = explode(':', $password);
+		$password = $password[count($password)-1];
 		
 		setcookie('ratings-userid', $userid,
 			time()+365*24*60*60);

@@ -8,7 +8,7 @@ class MessageHandler {
 		$language = isset($_GET['uselang'])
 			? self::cleanLanguageCode($_GET['uselang'])
 			: (gfGetAuth()->isLoggedIn()
-				? gfGetAuth()->getInformation('language')
+				? gfGetAuth()->getUserData('language')
 				: $DefaultLanguage);
 		
 		$this->getMessages( strtolower($language) );
