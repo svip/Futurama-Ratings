@@ -15,4 +15,6 @@ require ( 'includes/GlobalFunctions.php' );
 
 require ( 'includes/Authentication.php' );
 
+require ( 'includes/MessageHandler.php' );
+
 require ( 'includes/Parser.php' );
