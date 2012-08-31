@@ -1,0 +1,82 @@
+body {
+	font-family: sans-serif;
+	background: #ddd;
+}
+
+.clear {
+	clear: both;
+}
+
+a {
+	color: #24c;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+#menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 110%;
+	font-weight: bold;
+}
+#menu li {
+	float: left;
+	margin-left: 25px;
+}
+
+.episodelist > div {
+	width: 450px;
+	margin-bottom: 5px;
+	text-align: center;
+}
+.episode {
+	text-align: left;
+	border: 1px solid #33a;
+	background: #aaf;
+}
+.episode div {
+	display: table-cell;
+}
+.episode-ranking {
+	font-weight: bold;
+	color: #fff;
+	background: #55c;
+	padding: 5px 5px 5px 10px;
+	vertical-align: middle;
+	text-align: right;
+	width: 35px;
+	overflow: hidden;
+}
+.episode-title {
+	padding: 5px 5px;
+	width: 340px;
+	text-align: left;
+	font-size: 110%;
+}
+.episode-rating {
+	padding: 5px 10px 5px 5px;
+	vertical-align: middle;
+	width: 35px;
+	background: #77d;
+}
+
+fieldset {
+	width: 50%;
+}
+label, input, textarea {
+	float: left;
+	clear: left;
+}
+input, textarea {
+	width: 100%;
+}
+input[type=submit], input[type=checkbox] {
+	width: auto;
+}
+span.error {
+	color: #f00;
+	font-weight: bold;
+}

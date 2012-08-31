@@ -7,7 +7,6 @@ abstract class Page {
 	protected $episodes = array();
 	
 	public function __construct ( ) {
-		$this->getEpisodes();
 		$this->render();
 	}
 	
@@ -55,7 +54,13 @@ abstract class Page {
 		return true;
 	}
 	
-	private function getEpisodes ( ) {
+	protected function displayRating ( $rating ) {
+		if ( is_null($rating) )
+			return '?';
+		return gfRawMsg('$1', $rating/100.0);
+	}
+	
+	protected function getEpisodes ( ) {
 		$i = gfDBQuery("SELECT `episode_name`, `episode_id`
 			FROM `episodes`");
 		while ( $result = gfDBGetResult($i) ) {
@@ -68,13 +73,17 @@ abstract class Page {
 	}
 	
 	public function getTitle ( ) {
-		return $this->title;
+		if ( empty($this->title) )
+			return gfMsg('site-title');
+		return gfRawMsg('$1 - $2', $this->title, gfMsg('site-title'));
 	}
 	
 	public function getMenu ( ) {
 		$menu = array();
+		$menu[] = array(gfLink(), gfMsg('menu-index'));
 		if ( gfGetAuth()->isLoggedIn() ) {
 			$menu[] = array(gfLink('logout'), gfMsg('menu-logout'));
+			$menu[] = array(gfLink('parser'), gfMsg('menu-parser'));
 		} else {
 			$menu[] = array(gfLink('login'), gfMsg('menu-login'));
 			$menu[] = array(gfLink('register'), gfMsg('menu-register'));
