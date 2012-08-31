@@ -20,7 +20,84 @@ class Authentication {
 	
 	public function __construct ( ) {
 		$this->loggedIn = $this->checkCookieLogin();
-		$this->mode = $this->getSetMode();
+	}
+	
+	public function newUser ( $username, $password ) {
+		if ( trim($username) == ''
+			|| trim($password) == '' )
+			return false;
+		
+		$saltedPassword = $this->generateSaltedPassword($password);
+		$username = gfDBSanitise($username);
+		
+		$i = gfDBQuery("SELECT `user_id` 
+			FROM `users`
+			WHERE LOWER(`user_name`) = '".strtolower($username)."'");
+		
+		if ( gfDBGetNumRows($i) > 0 )
+			return false;
+		
+		$i = gfDBQuery("INSERT INTO `users` (`user_name`,
+			`user_password`, `user_joined`)
+			VALUES ('$username', '$saltedPassword', NOW() )");
+		
+		$userid = gfDBGetInsertId($i);
+		
+		return $userid;
+	}
+	
+	/**
+	 * Change the password for a registered user.
+	 *
+	 * @param $userid The userid of the user.
+	 * @param $password The raw password.
+	 * @return Boolean whether it was a success.
+	 */
+	public function changePassword ( $userid, $password ) {
+		$saltedPassword = $this->generateSaltedPassword($password);
+		
+		gfDBQuery ("UPDATE `users`
+			SET `user_password` = '$saltedPassword'
+			WHERE `user_id` = $userid");
+		
+		return true;
+	}
+	
+	/**
+	 * Generate a password with salt.
+	 *
+	 * @param $password The raw password.
+	 * @param $salt (optional) The salt to use; if not set, a random salt will
+	 *                         be generated.
+	 * @return The salt along with the salted password.
+	 */
+	public function generateSaltedPassword ( $password, $salt=null ) {
+		if ( is_null($salt) )
+			$salt = substr($this->generateToken(),0,8);
+		return ':'.$salt.':'.md5($salt . '-' . md5($password));
+	}
+	
+	/**
+	 * Generate a random 32 character token.
+	 *
+	 * @return The token.
+	 */
+	public function generateToken ( ) {
+		return md5( mt_rand( 0, 0x7fffffff ));
+	}
+	
+	/**
+	 * Get the user's current IP, with handling for cache servers.
+	 *
+	 * @return The IP.
+	 */
+	public function getUserIP ( ) {
+		global $CacheServers;
+		
+		if ( !in_array($_SERVER['REMOTE_ADDR'], $CacheServers) )
+			return $_SERVER['REMOTE_ADDR'];
+		else
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
 	}
 	
 	public function getUserData($data) {
@@ -38,72 +115,78 @@ class Authentication {
 	}
 	
 	private function checkCookieLogin() {
-		$username = $_COOKIE['ratings-username'];
+		if ( !isset($_COOKIE['ratings-userid']) 
+			|| !isset($_COOKIE['ratings-password']) )
+			return false;
+		
+		$userid = gfDBSanitise($_COOKIE['ratings-userid'], true);
 		$password = $_COOKIE['ratings-password'];
 		
-		if(!$username || !$password)
+		if( !$userid || !$password )
 			return false;
 		
-		if(!$this->verifyLoginCombo($username, $password, true))
+		if( !$this->verifyLoginCombo($userid, $password, true) )
 			return false;
 		
-		$i = gfDBQuery("SELECT `username`, `id`, `reviewer`, `admin`
+		$i = gfDBQuery("SELECT `user_name`, `user_id`
 			FROM `users`
-			WHERE LOWER(`username`) = '".strtolower($username)."'");
+			WHERE `user_id` = $userid");
 		
 		$result = gfDBGetResult($i);
 		
-		$this->userData['username'] = $result['username'];
-		$this->userData['userid'] = $result['id'];
-		$this->reviewer = ($result['reviewer']==1);
-		$this->admin = ($result['admin']==1);
+		$this->loggedIn = true;
+		
+		$this->userData['username'] = $result['user_name'];
+		$this->userData['userid'] = $result['user_id'];
 		
 		return true;
 	}
 	
 	public function isLoggedIn() {
 		return $this->loggedIn;
-	}	
-
-	public function verifyLoginCombo($username, $password,
-			$passwordIsMd5 = false) {
+	}
+	
+	/**
+	 * Compare an unsalted password with a salted password.
+	 *
+	 * @param $testPassword
+	 * @param $againstPassword
+	 * @return Boolean Whether they match.
+	 */
+	public function comparePassword ( $testPassword, 
+		$againstPassword, $salted=false ) {
+		if ( $salted ) {
+			$againstPassword = explode(':', $againstPassword);
+			return $testPassword == $againstPassword[2];
+		} else {
+			$salt = explode(':', $againstPassword);
+			return $this->generateSaltedPassword($testPassword, $salt[1]) == $againstPassword;
+		}
+	}
+	
+	public function verifyLoginCombo ( $userid, $password,
+			$passwordIsHashed = false ) {
 		
-		$username = gfDBSanitise($username);
-		
-		if ( !$passwordIsMd5 )
-			$password = md5($password);
-		
-		if ( isset($this->verifiedLogins[$username][$password]) )
-			return $this->verifiedLogins[$username][$password];
-		
-		$i = gfDBQuery("SELECT `password` FROM `users` WHERE LOWER(`username`) = '".strtolower($username)."'");
+		$i = gfDBQuery("SELECT `user_id`, `user_password`
+			FROM `users`
+			WHERE `user_id` = $userid");
 		
 		if ( gfDBGetNumRows($i) != 1 ) {
-			$this->verifiedLogins[$username] = array($password => false);
 			return false;
 		}
 		
 		$result = gfDBGetResult($i);
 		
-		if ( $password != $result['password'] ) {
-			$this->verifiedLogins[$username] = array($password => false);
-			return false;
-		}
-		
-		$this->verifiedLogins[$username] = array($password => true);
-		return true;
+		return $this->comparePassword($password, $result['user_password'], $passwordIsHashed);
 	}
 	
-	public function performLogin($username, $password,
-			$passwordIsMd5 = false) {
-		if ( !$this->verifyLoginCombo($username, $password,
-				$passwordIsMd5) )
+	public function performLogin($userid, $password,
+			$passwordIsHashed = false) {
+		if ( !$this->verifyLoginCombo($userid, $password,
+				$passwordIsHashed) )
 			return false;
 		
-		if ( !$passwordIsMd5 )
-			$password = md5($password);
-		
-		setcookie('ratings-username', $username,
+		setcookie('ratings-userid', $userid,
 			time()+365*24*60*60);
 		setcookie('ratings-password', $password,
 			time()+365*24*60*60);
