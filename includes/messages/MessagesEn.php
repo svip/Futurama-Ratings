@@ -58,4 +58,13 @@ $messages = array (
 	'colourcode-none'          => 'Same',
 	'colourcode-seasons'       => 'By season',
 	'colourcode-runs'          => 'By run',
+	
+	'js-colourcode-legend'     => 'Colour legend:',
+	'js-season-1'              => 'Season 1',
+	'js-season-2'              => 'Season 2',
+	'js-season-3'              => 'Season 3',
+	'js-season-4'              => 'Season 4',
+	'js-season-5'              => 'Season 5',
+	'js-season-6'              => 'Season 6',
+	'js-season-7'              => 'Season 7',
 );

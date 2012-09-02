@@ -74,6 +74,7 @@ var runColours = {
 		'rating': '#6ce4e5'
 	}
 };
+var messages = {};
 /*var tabindex = 1;
 var userid = 0;*/
 
@@ -87,6 +88,24 @@ function api ( query, callback ) {
 			callback ( data );
 		}
 	});
+}
+
+function getMessages ( ) {
+	api({'action': 'getmessages'},
+		getMessagesFinish
+	);
+}
+
+function getMessagesFinish ( data ) {
+	for ( message in data['messages'] ) {
+		messages[message] = data['messages'][message];
+	}
+}
+
+function jsMsg ( msg ) {
+	if ( !messages[msg] )
+		return '<' + msg + '>';
+	return messages[msg];
 }
 
 function alterRanking ( where, id ) {
@@ -162,6 +181,31 @@ function colourCode ( where ) {
 	performColourCode(what);
 }
 
+function colourLegend ( what ) {
+	if ( !$('#colourlegend').attr('id') ) {
+		$('#listsortbox').append($(document.createElement('div'))
+			.attr({'id': 'colourlegend'})
+			.append($(document.createElement('h3'))
+				.text(jsMsg('colourcode-legend'))
+			).append($(document.createElement('div'))
+				.attr({'id': 'colourlegend-content'})
+			)
+		);
+	}
+	
+	$('#colourlegend-content').empty();
+	
+	if ( what == 'seasons' ) {
+		for ( season in seasonColours ) {
+			$('#colourlegend-content')
+				.append($(document.createElement('div'))
+				.css({'background-color': seasonColours[season]['full']})
+				.text(jsMsg('season-'+season))
+			);
+		}
+	}
+}
+
 function performColourCode ( what ) {
 	switch ( what ) {
 		case 'none':
@@ -170,6 +214,7 @@ function performColourCode ( what ) {
 				$(this).children('.episode-ranking').css({'background-color': ''});
 				$(this).children('.episode-rating').css({'background-color': ''});
 			});
+			colourLegend(null);
 			break;
 		case 'seasons':
 			$('#ranked .episode, #unranked .episode').each(function(i) {
@@ -178,6 +223,7 @@ function performColourCode ( what ) {
 				$(this).children('.episode-ranking').css({'background-color': seasonColours[$('#episode-'+id+'-season').val()]['ranking']});
 				$(this).children('.episode-rating').css({'background-color': seasonColours[$('#episode-'+id+'-season').val()]['rating']});
 			});
+			colourLegend(what);
 			break;
 		case 'runs':
 			$('#ranked .episode, #unranked .episode').each(function(i) {
@@ -186,6 +232,7 @@ function performColourCode ( what ) {
 				$(this).children('.episode-ranking').css({'background-color': runColours[$('#episode-'+id+'-season').val()]['ranking']});
 				$(this).children('.episode-rating').css({'background-color': runColours[$('#episode-'+id+'-season').val()]['rating']});
 			});
+			colourLegend(what);
 			break;
 	}
 	
@@ -257,6 +304,7 @@ function getAllEpisodesFinish ( data ) {
 }
 
 function init ( ) {
+	getMessages();
 	if ( $("#ranked").hasClass('fulllist') ) {
 		getAllEpisodes();
 	}
