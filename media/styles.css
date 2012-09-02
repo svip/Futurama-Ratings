@@ -50,6 +50,13 @@ a:hover {
 	width: 35px;
 	overflow: hidden;
 }
+.episode-ranking:hover {
+	background: #33a;
+	cursor: pointer;
+}
+.episode-ranking input {
+	width: 35px;
+}
 .episode-title {
 	padding: 5px 5px;
 	width: 340px;
@@ -79,4 +86,17 @@ input[type=submit], input[type=checkbox] {
 span.error {
 	color: #f00;
 	font-weight: bold;
+}
+
+#listsortbox {
+	position: fixed;
+	right: 15px;
+	top: 75px;
+	width: 250px;
+	border: 1px solid #aaf;
+}
+#listsortbox label, #listsortbox input {
+	float: left;
+	width: auto;
+	clear: none;
 }

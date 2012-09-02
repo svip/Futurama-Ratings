@@ -7,6 +7,7 @@ $messages = array (
 	'form-err-required'        => 'Field required',
 	
 	'menu-index'               => 'Front page',
+	'menu-list'                => 'Your list',
 	'menu-login'               => 'Log in',
 	'menu-register'            => 'Register',
 	'menu-logout'              => 'Log out',
@@ -32,7 +33,16 @@ $messages = array (
 	'parserresult-notunderstood-description' => 'You will have to manually rank these episodes.',
 	'parserresult-title'       => 'How your text was understood:',
 	
+	'index-globallist'         => 'Average ranking of episodes:',
 	'index-userlist'           => 'Your ranking of episodes:',
 	'index-userlist-unranked'  => 'Unranked episodes:',
 	'index-gap'                => 'Gap in ranking',
+	
+	'listsort-title'           => 'Sort episodes',
+	'listsort-asc'             => 'Ascending',
+	'listsort-desc'            => 'Descending',
+	'colourcode-title'         => 'Colour coding',
+	'colourcode-none'          => 'Same',
+	'colourcode-seasons'       => 'By season',
+	'colourcode-runs'          => 'By run',
 );

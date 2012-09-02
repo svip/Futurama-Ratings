@@ -60,6 +60,75 @@ abstract class Page {
 		return gfRawMsg('$1', $rating/100.0);
 	}
 	
+	protected function listSortBox ( ) {
+		return gfRawMsg('<div id="listsortbox">
+<h3>$1</h3>
+<input type="radio" name="listsort" id="listsort-asc" onchange="listSort(this);" />
+<label for="listsort-asc">$2</label>
+<input type="radio" name="listsort" id="listsort-desc" onchange="listSort(this);" checked="true" />
+<label for="listsort-desc">$3</label>
+<h3>$4</h3>
+<input type="radio" name="colourcode" id="colourcode-none" onchange="colourCode(this);" checked="true" />
+<label for="colourcode-none">$5</label>
+<input type="radio" name="colourcode" id="colourcode-seasons" onchange="colourCode(this);" />
+<label for="colourcode-seasons">$6</label>
+<input type="radio" name="colourcode" id="colourcode-runs" onchange="colourCode(this);" />
+<label for="colourcode-runs">$7</label>
+</div>',
+			gfMsg('listsort-title'),
+			gfMsg('listsort-asc'),
+			gfMsg('listsort-desc'),
+			gfMsg('colourcode-title'),
+			gfMsg('colourcode-none'),
+			gfMsg('colourcode-seasons'),
+			gfMsg('colourcode-runs')
+		);
+	}
+	
+	protected function makeList ( $i, &$ranked, $gaps=true ) {
+		$list = '';
+		$previousRanking = -1;
+		
+		while ( $result = gfDBGetResult($i) ) {
+			if ( $gaps ) {
+				if ( $previousRanking != -1
+					&& abs($result['ranking']-$previousRanking) > 1 ) {
+					$list .= gfRawMsg('<div class="gap">$1</div>',
+						gfMsg('index-gap')
+					);
+				}
+			}
+			$list .= gfRawMsg('<div class="episode" id="episode-$4">
+<input type="hidden" id="episode-$4-season" value="$6" />
+<input type="hidden" id="episode-$4-seasonnumber" value="$7" />
+<div class="episode-ranking"$5>$1</div>
+<div class="episode-title">$2</div>
+<div class="episode-rating">$3</div>
+</div>',
+				(is_null($result['ranking'])
+					?'?'
+					:round($result['ranking'], 0)
+				),
+				$result['episode_name'],
+				$this->displayRating($result['rating']),
+				$result['episode_id'],
+				($gaps
+					?gfRawMsg(
+						' onclick="alterRanking(this, $1);"',
+						$result['episode_id']
+					)
+					:''
+				),
+				$result['episode_season'],
+				$result['episode_seasonnumber']
+			);
+			$ranked[] = $result['episode_id'];
+			if ( $gaps )
+				$previousRanking = $result['ranking'];
+		}
+		return $list;
+	}
+	
 	protected function getEpisodes ( ) {
 		$i = gfDBQuery("SELECT `episode_name`, `episode_id`
 			FROM `episodes`");
@@ -82,6 +151,7 @@ abstract class Page {
 		$menu = array();
 		$menu[] = array(gfLink(), gfMsg('menu-index'));
 		if ( gfGetAuth()->isLoggedIn() ) {
+			$menu[] = array(gfLink('list'), gfMsg('menu-list'));
 			$menu[] = array(gfLink('logout'), gfMsg('menu-logout'));
 			$menu[] = array(gfLink('parser'), gfMsg('menu-parser'));
 		} else {
