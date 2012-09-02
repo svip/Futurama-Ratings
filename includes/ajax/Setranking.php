@@ -3,8 +3,8 @@
 class AjaxSetranking extends Ajax {
 	
 	protected function perform ( ) {
-		if ( !isset($_POST['id'])
-			|| !isset($_POST['ranking']) ) {
+		if ( !gfGetQuery('id')
+			|| !gfGetQuery('ranking') ) {
 			$this->setError(gfMsg('ajax-err-missingfields'));
 			return;
 		}
@@ -14,8 +14,8 @@ class AjaxSetranking extends Ajax {
 			return;
 		}
 		
-		$id = gfDBSanitise($_POST['id'], true);
-		$ranking = gfDBSanitise($_POST['ranking'], true);
+		$id = gfDBSanitise(gfGetQuery('id'), true);
+		$ranking = gfDBSanitise(gfGetQuery('ranking'), true);
 		
 		if ( $id == 0 || $ranking == 0 ) {
 			$this->setError(gfMsg('ajax-err-badinput'));

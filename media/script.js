@@ -159,6 +159,10 @@ function sortRankings ( ) {
 
 function colourCode ( where ) {
 	what = $(where).attr('id').split('-')[1];
+	performColourCode(what);
+}
+
+function performColourCode ( what ) {
 	switch ( what ) {
 		case 'none':
 			$('#ranked .episode, #unranked .episode').each(function(i) {
@@ -192,6 +196,70 @@ function clean ( el ) {
 		el.removeChild(el.firstChild);
 }
 
-function init ( ) {
-	
+function listSort ( which ) {
+	if ( !$("#ranked").hasClass('fulllist') )
+		return;
+	getAllEpisodes();
 }
+
+function getAllEpisodes ( ) {
+	order = 'asc';
+	if ( $('#listsort-desc').is(':checked') )
+		order = 'desc';
+	api({'action': 'getepisodes',
+		'order': order},
+		getAllEpisodesFinish
+	);
+}
+
+function formatRanking ( ranking, avgranking ) {
+	ranking = Math.round(ranking);
+	if ( avgranking!=null ) {
+		avgranking = Math.round(avgranking*10)/10;
+		return ranking + '<br /><span class="average">' + avgranking + '</span>';
+	}
+	return ranking;
+}
+
+function getAllEpisodesFinish ( data ) {
+	$("#ranked").empty();
+	l = $("#ranked");
+	episodes = data['episodes'];
+	for ( id in episodes ) {
+		l.append(
+			$(document.createElement('div')).attr({
+				'class': 'episode',
+				'id': 'episode-'+episodes[id]['id']
+			}).append($(document.createElement('input')).attr({
+				'type': 'hidden',
+				'id': 'episode-'+episodes[id]['id']+'-season',
+				'value': episodes[id]['season']
+			})).append($(document.createElement('input')).attr({
+				'type': 'hidden',
+				'id': 'episode-'+episodes[id]['id']+'-seasonnumber',
+				'value': episodes[id]['seasonnumber']
+			})).append($(document.createElement('div')).attr({
+				'class': 'episode-ranking'
+			}).html(formatRanking(episodes[id]['ranking'], episodes[id]['avgranking'])))
+			.append($(document.createElement('div')).attr({
+				'class': 'episode-title'
+			}).text(episodes[id]['name']))
+			.append($(document.createElement('div')).attr({
+				'class': 'episode-rating'
+			}).text('?'))
+		);
+	}
+	if ( $('#colourcode-seasons').is(':checked') ) {
+		performColourCode('seasons');
+	} else if ( $('#colourcode-runs').is(':checked') ) {
+		performColourCode('runs');
+	}
+}
+
+function init ( ) {
+	if ( $("#ranked").hasClass('fulllist') ) {
+		getAllEpisodes();
+	}
+}
+
+$.ready = init;

@@ -4,9 +4,10 @@ require ( 'includes/Init.php' );
 
 require ( 'includes/Ajax.php' );
 
-$action = ucfirst(@$_POST['action']);
+$action = ucfirst(gfGetQuery('action'));
 
-if ( !file_exists('includes/ajax/'.$action.'.php') ) {
+if ( is_null($action)
+	|| !file_exists('includes/ajax/'.$action.'.php') ) {
 	$action = 'Error';
 }
 

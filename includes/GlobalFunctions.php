@@ -96,6 +96,16 @@ function gfFullLink ( $page=null, $subpages=null, $bookmark=null,
 	return gfRawMsg('http://$1$2', $SiteDomain, $link);
 }
 
+function gfGetQuery ( $name, $default=null ) {
+	if ( !isset($_POST[$name]) ) {
+		if ( !isset($_GET[$name]) )
+			return $default;
+		else
+			return $_GET[$name];
+	}
+	return $_POST[$name];
+}
+
 function gfRedirect ( $url=null ) {
 	if ( is_null($url) )
 		$url = gfLink();

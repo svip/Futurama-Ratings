@@ -57,6 +57,10 @@ a:hover {
 .episode-ranking input {
 	width: 35px;
 }
+.episode-ranking .average {
+	font-size: 75%;
+	color: #ddd;
+}
 .episode-title {
 	padding: 5px 5px;
 	width: 340px;
