@@ -154,6 +154,7 @@ abstract class Page {
 			$menu[] = array(gfLink('list'), gfMsg('menu-list'));
 			$menu[] = array(gfLink('logout'), gfMsg('menu-logout'));
 			$menu[] = array(gfLink('parser'), gfMsg('menu-parser'));
+			$menu[] = array(gfLink('export'), gfMsg('menu-export'));
 		} else {
 			$menu[] = array(gfLink('login'), gfMsg('menu-login'));
 			$menu[] = array(gfLink('register'), gfMsg('menu-register'));

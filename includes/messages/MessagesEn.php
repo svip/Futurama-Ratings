@@ -12,6 +12,7 @@ $messages = array (
 	'menu-register'            => 'Register',
 	'menu-logout'              => 'Log out',
 	'menu-parser'              => 'Import list',
+	'menu-export'              => 'Export list',
 	
 	'register-title'           => 'Register',
 	
