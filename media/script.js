@@ -105,7 +105,14 @@ function getMessagesFinish ( data ) {
 function jsMsg ( msg ) {
 	if ( !messages[msg] )
 		return '<' + msg + '>';
-	return messages[msg];
+	tmp = messages[msg];
+	for ( argi in arguments ) {
+		if ( argi == 0 )
+			continue;
+		arg = arguments[argi];
+		tmp = tmp.replace('$' + argi, arg);
+	}
+	return tmp;
 }
 
 function alterRanking ( where, id ) {
@@ -200,7 +207,16 @@ function colourLegend ( what ) {
 			$('#colourlegend-content')
 				.append($(document.createElement('div'))
 				.css({'background-color': seasonColours[season]['full']})
-				.text(jsMsg('season-'+season))
+				.text(jsMsg('season', season))
+			);
+		}
+	} else if ( what == 'runs' ) {
+		t = {'original': 1, 'films': 5, 'new': 6};
+		for ( r in t ) {
+			$('#colourlegend-content')
+				.append($(document.createElement('div'))
+				.css({'background-color': seasonColours[t[r]]['full']})
+				.text(jsMsg('run-'+r))
 			);
 		}
 	}
