@@ -17,6 +17,15 @@ class Parser {
 	}
 	
 	public function parseUserList ( $content ) {
+		$content = str_replace(
+			array(
+				'’'
+			),
+			array (
+				"'"
+			),
+			$content
+		);
 		$lines = explode("\n", $content);
 		$ranking = array(); // id => rank
 		// because multiple episodes can have the same rank
