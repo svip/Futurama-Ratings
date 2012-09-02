@@ -38,6 +38,18 @@ $messages = array (
 	'index-userlist-unranked'  => 'Unranked episodes:',
 	'index-gap'                => 'Gap in ranking',
 	
+	'exportform-title'         => 'Export text list',
+	'exportform-syntax'        => 'Syntax',
+	'exportform-order-asc'     => 'In ascending order',
+	'exportform-order-desc'    => 'In descending order',
+	'exportform-combineparts'  => 'Combine film episodes into one',
+	'exportform-submit'        => 'Export',
+	'exportform-result'        => 'Result:',
+	'exportsyntax-rank'        => 'Your ranking',
+	'exportsyntax-no'          => 'Episode number',
+	'exportsyntax-title'       => 'Episode title',
+	'exportsyntax-code'        => 'Production code',
+	
 	'listsort-title'           => 'Sort episodes',
 	'listsort-asc'             => 'Ascending',
 	'listsort-desc'            => 'Descending',

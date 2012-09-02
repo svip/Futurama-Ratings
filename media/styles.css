@@ -80,8 +80,12 @@ label, input, textarea {
 input, textarea {
 	width: 100%;
 }
-input[type=submit], input[type=checkbox] {
+input[type=submit], input[type=checkbox], input[type=radio] {
 	width: auto;
+}
+input[type=checkbox], input[type=radio], label.tick {
+	float: left;
+	clear: none;
 }
 span.error {
 	color: #f00;
