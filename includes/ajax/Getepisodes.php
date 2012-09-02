@@ -49,5 +49,7 @@ class AjaxGetepisodes extends Ajax {
 			else
 				$j++;
 		}
+		
+		$this->setSuccess();
 	}
 }

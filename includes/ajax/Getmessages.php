@@ -12,5 +12,7 @@ class AjaxGetmessages extends Ajax {
 				continue;
 			$this->data['messages'][str_replace('js-', '', $msg)] = $message;
 		}
+		
+		$this->setSuccess();
 	}
 }
