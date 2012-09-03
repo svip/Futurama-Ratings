@@ -37,10 +37,14 @@ class AjaxGetuserepisodes extends Ajax {
 			e.`episode_id`, e.`episode_name`,
 			e.`episode_season`, e.`episode_seasonnumber`,
 			e.`episode_number`, e.`episode_id`
-			FROM `episodes` e
-				JOIN `rankings` r
+			FROM `rankings` r
+				JOIN `episodes` e
 					ON r.`episode_id` = e.`episode_id`
-						AND r.`user_id` != $userid
+			WHERE r.`episode_id` NOT IN (
+				SELECT `episode_id`
+				FROM `rankings`
+				WHERE `user_id` = $userid
+			)
 			GROUP BY e.`episode_id`
 			ORDER BY e.`episode_number` $order");
 		
@@ -70,10 +74,14 @@ class AjaxGetuserepisodes extends Ajax {
 		while ( $result = gfDBGetResult($i) ) {
 			$this->data['episodes'][] = array (
 				'id'            => $result['episode_id'],
-				'ranking'       => $result['ranking'],
+				'ranking'       => (is_null($result['ranking'])
+				                    ?null
+				                    :$result['ranking']),
 				'avgranking'    => null,
 				'name'          => $result['episode_name'],
-				'rating'        => $result['rating'],
+				'rating'        => (is_null($result['rating'])
+				                    ?null
+				                    :$result['rating']/10.0),
 				'avgrating'     => null,
 				'number'        => $result['episode_number'],
 				'season'        => $result['episode_season'],

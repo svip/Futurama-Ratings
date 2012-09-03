@@ -115,6 +115,46 @@ function jsMsg ( msg ) {
 	return tmp;
 }
 
+function alterRating ( where, id ) {
+	currentRating = $(where).text();
+	if ( currentRating == '?' )
+		currentRating = '';
+	$(where).empty();
+	
+	input = $(document.createElement('input'))
+		.attr({'size': '3',
+		'id': 'episode-'+id+'-rating',
+		'value': currentRating});
+	$(where).append(input).bind('click', null);
+	
+	input.focus();
+	input.attr('onkeydown', 'checkRatingSubmit(event, this, '+id+');');
+}
+
+function submitRatingFinish ( data ) {
+	if ( handleError(data) )
+		return;
+	getUserEpisodes();
+}
+
+function submitRating ( where, id, rating ) {
+	api({'action': 'setrating',
+		'id': id,
+		'rating': rating},
+		submitRatingFinish);
+}
+
+function checkRatingSubmit ( event, where, id ) {
+	if ( event.keyCode == 13 ) {
+		rating = parseFloat($(where).val());
+		if ( rating == 0 ) {
+			getUserEpisodes();
+		} else {
+			submitRating(where.parentNode, id, rating);
+		}
+	}
+}
+
 function alterRanking ( where, id ) {
 	currentRanking = where.firstChild.data;
 	if ( currentRanking == '?' )
@@ -144,21 +184,10 @@ function checkRankingSubmit ( event, where, id ) {
 	}
 }
 
-function handleError ( data ) {
-	if ( data['status'] == 1 ) {
-		alert(data['error']);
-		return true;
-	}
-	return false;
-}
-
 function submitRankingFinish ( data ) {
 	if ( handleError(data) )
 		return;
-	id = data['id'];
-	ranking = data['ranking'];
-	where = document.getElementById('episode-'+id).getElementsByTagName('div')[0];
-			getUserEpisodes();
+	getUserEpisodes();
 }
 
 function submitRanking ( where, id, ranking ) {
@@ -166,6 +195,14 @@ function submitRanking ( where, id, ranking ) {
 		'id': id,
 		'ranking': ranking},
 		submitRankingFinish);
+}
+
+function handleError ( data ) {
+	if ( data['status'] == 1 ) {
+		alert(data['error']);
+		return true;
+	}
+	return false;
 }
 
 function colourCode ( where ) {
@@ -262,6 +299,14 @@ function formatRanking ( ranking, avgranking ) {
 	return ranking;
 }
 
+function formatRating ( rating, avgrating ) {
+	if ( rating != null )
+		return Math.round(rating*10)/10;
+	if ( avgrating != null )
+		return Math.round(avgrating*10)/10;
+	return '?';
+}
+
 function getUserEpisodes ( ) {
 	order = 'asc';
 	if ( $('#listsort-desc').is(':checked') )
@@ -272,7 +317,7 @@ function getUserEpisodes ( ) {
 	uquery = {'action': 'getuserepisodes',
 		'order': order,
 		'type': 'unranked'};
-	if ( $('#list-userid') != null ) {
+	if ( $('#list-userid').val() != undefined ) {
 		userid = $('#list-userid').val();
 		rquery['userid'] = userid;
 		uquery['userid'] = userid;
@@ -280,7 +325,7 @@ function getUserEpisodes ( ) {
 	api(rquery,
 		getUserEpisodesRankedFinish
 	);
-	if ( $('#unranked') != null ) {
+	if ( $('#unranked').attr('id') != undefined ) {
 		api(uquery,
 			getUserEpisodesUnrankedFinish
 		);
@@ -291,7 +336,11 @@ function getUserEpisodesRankedFinish ( data ) {
 	$("#ranked").empty();
 	l = $("#ranked");
 	episodes = data['episodes'];
-	placeEpisodes(l, episodes, true);
+	if ( $('#list-userid').val() != undefined ) {
+		placeEpisodes(l, episodes, false);
+	} else {
+		placeEpisodes(l, episodes, true);
+	}
 }
 
 function getUserEpisodesUnrankedFinish ( data ) {
@@ -340,10 +389,11 @@ function placeEpisodes ( l, episodes, canalter ) {
 			}).text(episodes[id]['name']))
 			.append($(document.createElement('div')).attr({
 				'class': 'episode-rating'
-			}).text('?'))
+			}).text(formatRating(episodes[id]['rating'], episodes[id]['avgrating'])))
 		);
 		if ( canalter ) {
 			$('#episode-'+episodes[id]['id']).children('.episode-ranking').attr('onclick', 'alterRanking(this, '+episodes[id]['id']+');');
+			$('#episode-'+episodes[id]['id']).children('.episode-rating').attr('onclick', 'alterRating(this, '+episodes[id]['id']+');');
 		}
 	}
 	if ( $('#colourcode-seasons').is(':checked') ) {

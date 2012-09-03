@@ -6,7 +6,7 @@ $messages = array (
 	'form-required'            => '<b>(required)</b>',
 	'form-err-required'        => 'Field required',
 	
-	'menu-index'               => 'Front page',
+	'menu-index'               => 'Combined list',
 	'menu-list'                => 'Your list',
 	'menu-login'               => 'Log in',
 	'menu-register'            => 'Register',
@@ -60,6 +60,8 @@ $messages = array (
 	'colourcode-none'          => 'Same',
 	'colourcode-seasons'       => 'By season',
 	'colourcode-runs'          => 'By run',
+	
+	'ajax-err-valueoutofrange' => 'Value out of allowed range (range: $1 - $2)',
 	
 	'js-colourcode-legend'     => 'Colour legend:',
 	'js-season'                => 'Season $1',

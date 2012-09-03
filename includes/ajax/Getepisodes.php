@@ -27,9 +27,14 @@ class AjaxGetepisodes extends Ajax {
 		while ( $result = gfDBGetResult($i) ) {
 			$this->data['episodes'][] = array (
 				'id'            => $result['episode_id'],
-				'avgranking'    => $result['ranking'],
+				'avgranking'    => (is_null($result['ranking'])
+				                    ?null
+				                    :$result['ranking']),
 				'name'          => $result['episode_name'],
-				'avgrating'     => $result['rating'],
+				'rating'        => null,
+				'avgrating'     => (is_null($result['rating'])
+				                    ?null
+				                    :$result['rating']/10.0),
 				'number'        => $result['episode_number'],
 				'season'        => $result['episode_season'],
 				'seasonnumber'  => $result['episode_seasonnumber'],
