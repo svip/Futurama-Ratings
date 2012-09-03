@@ -137,7 +137,7 @@ function checkRankingSubmit ( event, where, id ) {
 	if ( event.keyCode == 13 ) {
 		ranking = parseInt(where.value);
 		if ( ranking == 0 ) {
-			endAlterRanking(where.parentNode, id, 0);
+			getUserEpisodes();
 		} else {
 			submitRanking(where.parentNode, id, ranking);
 		}
@@ -145,15 +145,20 @@ function checkRankingSubmit ( event, where, id ) {
 }
 
 function handleError ( data ) {
-	if ( data['status'] == 1 )
+	if ( data['status'] == 1 ) {
 		alert(data['error']);
+		return true;
+	}
+	return false;
 }
 
 function submitRankingFinish ( data ) {
+	if ( handleError(data) )
+		return;
 	id = data['id'];
 	ranking = data['ranking'];
 	where = document.getElementById('episode-'+id).getElementsByTagName('div')[0];
-	endAlterRanking ( where, id, ranking );
+			getUserEpisodes();
 }
 
 function submitRanking ( where, id, ranking ) {
@@ -161,26 +166,6 @@ function submitRanking ( where, id, ranking ) {
 		'id': id,
 		'ranking': ranking},
 		submitRankingFinish);
-}
-
-function endAlterRanking ( where, id, value ) {
-	clean(where);
-	if ( value == 0 ) {
-		where.appendChild(document.createTextNode('?'));
-	} else {
-		where.appendChild(document.createTextNode(ranking));
-		ep = where.parentNode;
-		if ( ep.parentNode.getAttribute('id') == 'unranked' ) {
-			document.getElementById('ranked').appendChild(ep);
-			//document.getElementById('unranked').removeChild(ep);
-		}
-		where.setAttribute('onclick', 'alterRanking(this, '+id+');');
-		sortRankings();
-	}
-}
-
-function sortRankings ( ) {
-	// not implemented
 }
 
 function colourCode ( where ) {
@@ -260,9 +245,51 @@ function clean ( el ) {
 }
 
 function listSort ( which ) {
-	if ( !$("#ranked").hasClass('fulllist') )
-		return;
-	getAllEpisodes();
+	if ( $("#ranked").hasClass('fulllist') )
+		getAllEpisodes();
+	if ( $("#ranked").hasClass('userlist') )
+		getUserEpisodes();
+}
+
+function formatRanking ( ranking, avgranking ) {
+	if ( ranking == null )
+		return '?';
+	ranking = Math.round(ranking);
+	if ( avgranking!=null ) {
+		avgranking = Math.round(avgranking*10)/10;
+		return ranking + '<br /><span class="average">' + avgranking + '</span>';
+	}
+	return ranking;
+}
+
+function getUserEpisodes ( ) {
+	order = 'asc';
+	if ( $('#listsort-desc').is(':checked') )
+		order = 'desc';
+	api({'action': 'getuserepisodes',
+		'order': order,
+		'type': 'ranked'},
+		getUserEpisodesRankedFinish
+	);
+	api({'action': 'getuserepisodes',
+		'order': order,
+		'type': 'unranked'},
+		getUserEpisodesUnrankedFinish
+	);
+}
+
+function getUserEpisodesRankedFinish ( data ) {
+	$("#ranked").empty();
+	l = $("#ranked");
+	episodes = data['episodes'];
+	placeEpisodes(l, episodes, true);
+}
+
+function getUserEpisodesUnrankedFinish ( data ) {
+	$("#unranked").empty();
+	l = $("#unranked");
+	episodes = data['episodes'];
+	placeEpisodes(l, episodes, true);
 }
 
 function getAllEpisodes ( ) {
@@ -275,19 +302,14 @@ function getAllEpisodes ( ) {
 	);
 }
 
-function formatRanking ( ranking, avgranking ) {
-	ranking = Math.round(ranking);
-	if ( avgranking!=null ) {
-		avgranking = Math.round(avgranking*10)/10;
-		return ranking + '<br /><span class="average">' + avgranking + '</span>';
-	}
-	return ranking;
-}
-
 function getAllEpisodesFinish ( data ) {
 	$("#ranked").empty();
 	l = $("#ranked");
 	episodes = data['episodes'];
+	placeEpisodes(l, episodes, false);
+}
+
+function placeEpisodes ( l, episodes, canalter ) {
 	for ( id in episodes ) {
 		l.append(
 			$(document.createElement('div')).attr({
@@ -311,6 +333,9 @@ function getAllEpisodesFinish ( data ) {
 				'class': 'episode-rating'
 			}).text('?'))
 		);
+		if ( canalter ) {
+			$('#episode-'+episodes[id]['id']).children('.episode-ranking').attr('onclick', 'alterRanking(this, '+episodes[id]['id']+');');
+		}
 	}
 	if ( $('#colourcode-seasons').is(':checked') ) {
 		performColourCode('seasons');
@@ -323,6 +348,9 @@ function init ( ) {
 	getMessages();
 	if ( $("#ranked").hasClass('fulllist') ) {
 		getAllEpisodes();
+	}
+	if ( $("#ranked").hasClass('userlist') ) {
+		getUserEpisodes();
 	}
 }
 
