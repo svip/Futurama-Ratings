@@ -63,10 +63,14 @@ abstract class Page {
 	protected function listSortBox ( ) {
 		return gfRawMsg('<div id="listsortbox">
 <h3>$1</h3>
-<input type="radio" name="listsort" id="listsort-asc" onchange="listSort(this);" checked="true" />
-<label for="listsort-asc">$2</label>
-<input type="radio" name="listsort" id="listsort-desc" onchange="listSort(this);" />
-<label for="listsort-desc">$3</label>
+<input type="radio" name="listsort" id="listsort-ranking-asc" onchange="listSort(this);" checked="true" />
+<label for="listsort-ranking-asc">$2</label><br />
+<input type="radio" name="listsort" id="listsort-ranking-desc" onchange="listSort(this);" />
+<label for="listsort-ranking-desc">$3</label><br />
+<input type="radio" name="listsort" id="listsort-rating-desc" onchange="listSort(this);" />
+<label for="listsort-rating-desc">$9</label><br />
+<input type="radio" name="listsort" id="listsort-rating-asc" onchange="listSort(this);" />
+<label for="listsort-rating-asc">$8</label><br />
 <h3>$4</h3>
 <input type="radio" name="colourcode" id="colourcode-none" onchange="colourCode(this);" checked="true" />
 <label for="colourcode-none">$5</label>
@@ -76,12 +80,14 @@ abstract class Page {
 <label for="colourcode-runs">$7</label>
 </div>',
 			gfMsg('listsort-title'),
-			gfMsg('listsort-asc'),
-			gfMsg('listsort-desc'),
+			gfMsg('listsort-ranking-asc'),
+			gfMsg('listsort-ranking-desc'),
 			gfMsg('colourcode-title'),
 			gfMsg('colourcode-none'),
 			gfMsg('colourcode-seasons'),
-			gfMsg('colourcode-runs')
+			gfMsg('colourcode-runs'),
+			gfMsg('listsort-rating-asc'),
+			gfMsg('listsort-rating-desc')
 		);
 	}
 	

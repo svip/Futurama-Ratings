@@ -7,34 +7,34 @@ var seasonColours = {
 		'rating': '#ed6796'
 	},
 	2: {
-		'full': '#d480bd',
-		'ranking': '#ea4bbf',
-		'rating': '#f174cf'
+		'full': '#e57dec',
+		'ranking': '#cf15db',
+		'rating': '#f55aff'
 	},
 	3: {
-		'full': '#ce94ec',
-		'ranking': '#ce77fb',
-		'rating': '#a33fd7'
+		'full': '#9879e5',
+		'ranking': '#5219e3',
+		'rating': '#8e62fd'
 	},
 	4: {
-		'full': '#9f99dc',
-		'ranking': '#7e72f3',
-		'rating': '#5445e0'
+		'full': '#89bbdb',
+		'ranking': '#198ad2',
+		'rating': '#61c2ff'
 	},
 	5: {
-		'full': '#8aadd5',
-		'ranking': '#317cd0',
-		'rating': '#6eabef'
+		'full': '#91deb3',
+		'ranking': '#15d46a',
+		'rating': '#65f6a6'
 	},
 	6: {
-		'full': '#84cacb',
-		'ranking': '#3bcdcf',
-		'rating': '#6ce4e5'
+		'full': '#abde89',
+		'ranking': '#62cd1b',
+		'rating': '#9ef962'
 	},
 	7: {
-		'full': '#78d7ab',
-		'ranking': '#32db8d',
-		'rating': '#60f8b2'
+		'full': '#d4d781',
+		'ranking': '#abb10f',
+		'rating': '#eef44e'
 	}
 };
 var runColours = {
@@ -59,19 +59,19 @@ var runColours = {
 		'rating': '#ed6796'
 	},
 	5: {
-		'full': '#8aadd5',
-		'ranking': '#317cd0',
-		'rating': '#6eabef'
+		'full': '#91deb3',
+		'ranking': '#15d46a',
+		'rating': '#65f6a6'
 	},
 	6: {
-		'full': '#84cacb',
-		'ranking': '#3bcdcf',
-		'rating': '#6ce4e5'
+		'full': '#abde89',
+		'ranking': '#62cd1b',
+		'rating': '#9ef962'
 	},
 	7: {
-		'full': '#84cacb',
-		'ranking': '#3bcdcf',
-		'rating': '#6ce4e5'
+		'full': '#abde89',
+		'ranking': '#62cd1b',
+		'rating': '#9ef962'
 	}
 };
 var messages = {};
@@ -309,13 +309,24 @@ function formatRating ( rating, avgrating ) {
 
 function getUserEpisodes ( ) {
 	order = 'asc';
-	if ( $('#listsort-desc').is(':checked') )
+	sortby = 'ranking';
+	if ( $('#listsort-ranking-desc').is(':checked') ) {
 		order = 'desc';
+	}
+	if ( $('#listsort-rating-asc').is(':checked') ) {
+		sortby = 'rating';
+	}
+	if ( $('#listsort-rating-desc').is(':checked') ) {
+		order = 'desc';
+		sortby = 'rating';
+	}
 	rquery = {'action': 'getuserepisodes',
 		'order': order,
+		'sortby': sortby,
 		'type': 'ranked'};
 	uquery = {'action': 'getuserepisodes',
 		'order': order,
+		'sortby': sortby,
 		'type': 'unranked'};
 	if ( $('#list-userid').val() != undefined ) {
 		userid = $('#list-userid').val();
@@ -352,10 +363,20 @@ function getUserEpisodesUnrankedFinish ( data ) {
 
 function getAllEpisodes ( ) {
 	order = 'asc';
-	if ( $('#listsort-desc').is(':checked') )
+	sortby = 'ranking';
+	if ( $('#listsort-ranking-desc').is(':checked') ) {
 		order = 'desc';
+	}
+	if ( $('#listsort-rating-asc').is(':checked') ) {
+		sortby = 'rating';
+	}
+	if ( $('#listsort-rating-desc').is(':checked') ) {
+		order = 'desc';
+		sortby = 'rating';
+	}
 	api({'action': 'getepisodes',
-		'order': order},
+		'order': order,
+		'sortby': sortby},
 		getAllEpisodesFinish
 	);
 }

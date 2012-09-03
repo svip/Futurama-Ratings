@@ -54,8 +54,10 @@ $messages = array (
 	'exportsyntax-code'        => 'Production code',
 	
 	'listsort-title'           => 'Sort episodes',
-	'listsort-asc'             => 'Ascending',
-	'listsort-desc'            => 'Descending',
+	'listsort-ranking-asc'     => 'Ascending (ranking)',
+	'listsort-ranking-desc'    => 'Descending (ranking)',
+	'listsort-rating-asc'      => 'Ascending (rating)',
+	'listsort-rating-desc'     => 'Descending (rating)',
 	'colourcode-title'         => 'Colour coding',
 	'colourcode-none'          => 'Same',
 	'colourcode-seasons'       => 'By season',

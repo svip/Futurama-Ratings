@@ -7,6 +7,10 @@ class AjaxGetepisodes extends Ajax {
 			?'ASC'
 			:'DESC'
 		);
+		$sortby = (gfGetQuery('sortby', 'ranking') == 'ranking'
+			?'ranking'
+			:'rating'
+		);
 		
 		$i = gfDBQuery("SELECT 
 			SUM(r.`ranking_ranking`)/COUNT(r.`ranking_ranking`)
@@ -20,7 +24,7 @@ class AjaxGetepisodes extends Ajax {
 				JOIN `episodes` e
 					ON r.`episode_id` = e.`episode_id`
 			GROUP BY e.`episode_id`
-			ORDER BY `ranking` $order");
+			ORDER BY `$sortby` $order");
 		
 		$this->data['episodes'] = array();
 		
@@ -43,13 +47,15 @@ class AjaxGetepisodes extends Ajax {
 		
 		$j = 1;
 		
-		if ( $order == 'DESC' )
+		if ( ($order == 'DESC' && $sortby == 'ranking')
+			|| ($order == 'ASC' && $sortby == 'rating') )
 			$j = count($this->data['episodes']);
 		
 		foreach ( $this->data['episodes'] as $i => $episode ) {
 			$this->data['episodes'][$i]['ranking'] = $j;
 			
-			if ( $order == 'DESC' )
+			if ( ($order == 'DESC' && $sortby == 'ranking')
+				|| ($order == 'ASC' && $sortby == 'rating') )
 				$j--;
 			else
 				$j++;
