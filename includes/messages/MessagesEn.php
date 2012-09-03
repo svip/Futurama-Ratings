@@ -13,6 +13,7 @@ $messages = array (
 	'menu-logout'              => 'Log out',
 	'menu-parser'              => 'Import list',
 	'menu-export'              => 'Export list',
+	'menu-user'                => 'Link to my list',
 	
 	'register-title'           => 'Register',
 	
@@ -36,6 +37,7 @@ $messages = array (
 	
 	'index-globallist'         => 'Average ranking of episodes:',
 	'index-userlist'           => 'Your ranking of episodes:',
+	'index-otheruserlist'      => '$1\'s ranking of episodes:',
 	'index-userlist-unranked'  => 'Unranked episodes:',
 	'index-gap'                => 'Gap in ranking',
 	

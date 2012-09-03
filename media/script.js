@@ -266,16 +266,25 @@ function getUserEpisodes ( ) {
 	order = 'asc';
 	if ( $('#listsort-desc').is(':checked') )
 		order = 'desc';
-	api({'action': 'getuserepisodes',
+	rquery = {'action': 'getuserepisodes',
 		'order': order,
-		'type': 'ranked'},
+		'type': 'ranked'};
+	uquery = {'action': 'getuserepisodes',
+		'order': order,
+		'type': 'unranked'};
+	if ( $('#list-userid') != null ) {
+		userid = $('#list-userid').val();
+		rquery['userid'] = userid;
+		uquery['userid'] = userid;
+	}
+	api(rquery,
 		getUserEpisodesRankedFinish
 	);
-	api({'action': 'getuserepisodes',
-		'order': order,
-		'type': 'unranked'},
-		getUserEpisodesUnrankedFinish
-	);
+	if ( $('#unranked') != null ) {
+		api(uquery,
+			getUserEpisodesUnrankedFinish
+		);
+	}
 }
 
 function getUserEpisodesRankedFinish ( data ) {
